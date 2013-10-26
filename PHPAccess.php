@@ -35,6 +35,15 @@ class PHPAccess {
 	}
 	
 	/**
+	 * Get version information from the access database file
+	 * 
+	 * @returns string mdb file format version
+	 */
+	public function getVersion() {
+		return implode("\n",$this->_execute('mdb-ver',$this->_escapedMdbFile));
+	}
+	
+	/**
 	 * Get tables from MDB database
 	 * 
 	 * @returns array List of tables
@@ -72,6 +81,53 @@ class PHPAccess {
 		return implode("\n",$this->_execute('mdb-export', $args));
 	}
 	
+	/**
+	 * Get contents of a table as an assosiated array
+	 * 
+	 * @param $table Table to be exported
+	 * @returns array Table contents
+	 */
+	public function getData($table) {
+		$csvRows = explode("\n",$this->getCSV($table, true));
+		$result = array();
+		if($csvRows) {
+			$columns = str_getcsv($csvRows[0]);
+			
+			$rows = count($csvRows);
+			for($i=1;$i<$rows;$i++) {
+				$rowData = str_getcsv($csvRows[$i]);
+				$row = array();
+				foreach($columns as $num => $name) {
+					$row[$name] = $rowData[$num];
+				}
+				$result[] = $row;
+			}
+		}
+		return $result;
+	}
+	
+	/**
+	 * Get table columns
+	 * @returns array
+	 */
+	public function getColumns($table) {
+		$csvRows = explode("\n",$this->getCSV($table, true));
+		if($csvRows) {
+			return str_getcsv($csvRows[0]);
+		}
+		else {
+			return array();
+		}
+	}
+	
+	/**
+	 * Return SQL schema for the selected table
+	 * @returns string Schema for creating the table into a sql database
+	 */
+	public function getTableSql($table, $format = 'mysql') {
+		$args = '-T ' . escapeshellarg($table) . ' ' . $this->_escapedMdbFile . ' ' . escapeshellarg($format);
+		return implode("\n", $this->_execute('mdb-schema', $args));
+	}
 	
 	/**
 	 * Return SQL schema from the MDB database
@@ -79,7 +135,7 @@ class PHPAccess {
 	 * @param $format SQL schema format. Default is mysql.
 	 * @returns string Schema for creating tables into a sql database
 	 */
-	public function getSqlSchema($format = 'mysql') {
+	public function getDatabaseSql($format = 'mysql') {
 		$args = $this->_escapedMdbFile . ' ' . escapeshellarg($format);
 		return implode("\n", $this->_execute('mdb-schema', $args));
 	}
@@ -97,7 +153,7 @@ class PHPAccess {
 		}
 		exec($app . ' ' . $paramString, $outputArray, $exitValue);
 		if($exitValue != 0) {
-			throw new PHPAccessException("Could not execute command '$app'");
+			throw new PHPAccessException("Could not execute command");
 		}
 		return $outputArray;
 	}
