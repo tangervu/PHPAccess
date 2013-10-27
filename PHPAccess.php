@@ -61,12 +61,16 @@ class PHPAccess {
 	 * @returns string CSV data
 	 */
 	public function getCSV($table, $includeHeaders = true) {
+		return implode("\n",$this->_getCSVArray($table, $includeHeaders));
+	}
+	
+	protected function _getCSVArray($table, $includeHeaders = true) {
 		$args = '';
 		if(!$includeHeaders) {
-			$args .= '-H';
+			$args .= '-H ';
 		}
-		$args .= ' -D "%F %T" ' . $this->_escapedMdbFile . ' ' . escapeshellarg($table);
-		return implode("\n",$this->_execute('mdb-export', $args));
+		$args .= '-D "%F %T" ' . $this->_escapedMdbFile . ' ' . escapeshellarg($table);
+		return $this->_execute('mdb-export', $args);
 	}
 	
 	/**
@@ -88,7 +92,7 @@ class PHPAccess {
 	 * @returns array Table contents
 	 */
 	public function getData($table) {
-		$csvRows = explode("\n",$this->getCSV($table, true));
+		$csvRows = $this->_getCSVArray($table, true);
 		$result = array();
 		if($csvRows) {
 			$columns = str_getcsv($csvRows[0]);
@@ -111,7 +115,7 @@ class PHPAccess {
 	 * @returns array
 	 */
 	public function getColumns($table) {
-		$csvRows = explode("\n",$this->getCSV($table, true));
+		$csvRows = $this->_getCSVArray($table, true);
 		if($csvRows) {
 			return str_getcsv($csvRows[0]);
 		}
