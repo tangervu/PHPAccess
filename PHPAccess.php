@@ -27,8 +27,7 @@ class PHPAccess {
 	
 	public function __construct($mdbFile) {
 		if(!file_exists($mdbFile)) {
-			throw new PHPAccessException("File '$mdbFile' not found");
-			
+			throw new \Exception("File '$mdbFile' not found");
 		}
 		$this->_mdbFile = $mdbFile;
 		$this->_escapedMdbFile = escapeshellarg($mdbFile);
@@ -157,10 +156,8 @@ class PHPAccess {
 		}
 		exec($app . ' ' . $paramString, $outputArray, $exitValue);
 		if($exitValue != 0) {
-			throw new PHPAccessException("Could not execute command");
+			throw new \Exception("Could not execute command");
 		}
 		return $outputArray;
 	}
 }
-
-class PHPAccessException extends \Exception { }

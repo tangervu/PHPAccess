@@ -1,0 +1,20 @@
+{
+	"name": "tangervu/phpaccess",
+	"description": "Read Microsoft Access databases on Linux using mdbtools command line tools",
+	"keywords": ["Microsoft Access","MS Access","Access","MDB","mdbtools"],
+	"homepage": "https://github.com/tangervu/PHPAccess",
+	"license": "LGPL-3.0",
+	"authors": [
+		{
+			"name": "Tuomas Angervuori",
+			"email": "tuomas.angervuori@gmail.com",
+			"homepage": "http://anger.kapsi.fi/tuomas/",
+			"role": "Developer"
+		}
+	],
+	"autoload": {
+		"psr-0": {
+			"PHPAccess\\": ""
+		}
+	}
+}
