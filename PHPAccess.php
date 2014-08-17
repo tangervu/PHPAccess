@@ -71,6 +71,21 @@ class PHPAccess {
 		$args .= '-D "%F %T" ' . $this->_escapedMdbFile . ' ' . escapeshellarg($table);
 		return $this->_execute('mdb-export', $args);
 	}
+
+	protected function _combineCSVRows($csvRows, $i)
+	{
+		$row = "";
+		$total = count($csvRows);
+		for ($count = $i; $count < $total; $count++) {
+        		$row .= $csvRows[$count];
+
+        		if (substr_count($row, '"') % 2 == 0) {
+                		break;
+            		}
+	    	}
+
+	    	return array($row, $count + 1);
+	}
 	
 	/**
 	 * Get table contents as SQL insert queries
@@ -98,7 +113,14 @@ class PHPAccess {
 			
 			$rows = count($csvRows);
 			for($i=1;$i<$rows;$i++) {
-				$rowData = str_getcsv($csvRows[$i]);
+				$count = substr_count($csvRows[$i], '"');
+				if ($count % 2 > 0) {
+					list($row, $i) = $this->_combineCSVRows($csvRows, $i);
+				} else {
+					$row = $csvRows[$i];
+				}
+				
+				$rowData = str_getcsv($row);
 				$row = array();
 				foreach($columns as $num => $name) {
 					$row[$name] = $rowData[$num];
