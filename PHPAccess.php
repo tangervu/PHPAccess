@@ -120,7 +120,7 @@ class PHPAccess {
 					$row = $csvRows[$i];
 				}
 				
-				$rowData = str_getcsv($csvRows[$i]);
+				$rowData = str_getcsv($row);
 				$row = array();
 				foreach($columns as $num => $name) {
 					$row[$name] = $rowData[$num];
