@@ -16,5 +16,8 @@
 		"psr-4": {
 			"PHPAccess\\": ""
 		}
+	},
+	"require": {
+		"league/csv": "5.*"
 	}
 }

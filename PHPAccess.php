@@ -91,22 +91,10 @@ class PHPAccess {
 	 * @returns array Table contents
 	 */
 	public function getData($table) {
-		$csvRows = $this->_getCSVArray($table, true);
-		$result = array();
-		if($csvRows) {
-			$columns = str_getcsv($csvRows[0]);
-			
-			$rows = count($csvRows);
-			for($i=1;$i<$rows;$i++) {
-				$rowData = str_getcsv($csvRows[$i]);
-				$row = array();
-				foreach($columns as $num => $name) {
-					$row[$name] = $rowData[$num];
-				}
-				$result[] = $row;
-			}
-		}
-		return $result;
+		$reader = \League\Csv\Reader::createFromString(implode("\n",$this->_getCSVArray($table, true)));
+		$columns = $this->getColumns($table);
+		$reader->setOffset(1);
+		return $reader->fetchAssoc($columns);
 	}
 	
 	/**
@@ -114,13 +102,8 @@ class PHPAccess {
 	 * @returns array
 	 */
 	public function getColumns($table) {
-		$csvRows = $this->_getCSVArray($table, true);
-		if($csvRows) {
-			return str_getcsv($csvRows[0]);
-		}
-		else {
-			return array();
-		}
+		$reader = \League\Csv\Reader::createFromString(implode("\n",$this->_getCSVArray($table, true)));
+		return $reader->fetchOne(0);
 	}
 	
 	/**
